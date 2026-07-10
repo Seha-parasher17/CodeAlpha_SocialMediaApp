@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}{{ profile_user.username }}{% endblock %}
+{% block content %}
+<div class="card shadow-sm mb-4">
+    <div class="card-body p-4">
+        <div class="d-flex flex-column flex-md-row align-items-md-center gap-3">
+            {% if profile.profile_image %}
+                <img src="{{ profile.profile_image.url }}" class="profile-avatar" alt="{{ profile_user.username }}">
+            {% else %}
+                <div class="profile-placeholder">{{ profile_user.username|first|upper }}</div>
+            {% endif %}
+
+            <div class="flex-grow-1">
+                <h2 class="fw-bold mb-1">@{{ profile_user.username }}</h2>
+                <p class="mb-2">{{ profile.bio|default:"No bio added yet." }}</p>
+                <span class="me-3"><strong>{{ profile.followers.count }}</strong> followers</span>
+                <span><strong>{{ profile_user.following_profiles.count }}</strong> following</span>
+            </div>
+
+            {% if request.user == profile_user %}
+                <a class="btn btn-outline-dark" href="{% url 'accounts:edit_profile' %}">Edit Profile</a>
+            {% else %}
+                <form method="post" action="{% url 'accounts:toggle_follow' profile_user.username %}">
+                    {% csrf_token %}
+                    <button class="btn btn-primary" type="submit">
+                        {% if is_following %}Unfollow{% else %}Follow{% endif %}
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<h3 class="fw-bold mb-3">Posts</h3>
+{% include "posts/post_list.html" with posts=posts %}
+{% endblock %}

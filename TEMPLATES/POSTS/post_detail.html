@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Post by {{ post.author.username }}{% endblock %}
+{% block content %}
+{% include "posts/post_list.html" with posts=post|make_list %}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h4 class="fw-bold mb-3">Comments</h4>
+
+        {% for comment in post.comments.all %}
+            <div class="border-bottom py-2">
+                <strong>@{{ comment.author.username }}</strong>
+                <span class="text-muted small">{{ comment.created_at|date:"d M, h:i A" }}</span>
+                <div>{{ comment.content }}</div>
+            </div>
+        {% empty %}
+            <p class="text-muted">No comments yet.</p>
+        {% endfor %}
+
+        <form method="post" class="mt-3">
+            {% csrf_token %}
+            <div class="input-group">
+                {{ form.content }}
+                <button class="btn btn-primary" type="submit">Comment</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

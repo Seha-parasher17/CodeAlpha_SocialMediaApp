@@ -1,33 +1,74 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
 
-        <a class="navbar-brand fw-bold" href="/">
+        <a class="navbar-brand fw-bold" href="{% url 'posts:home' %}">
             CodeAlpha Social
         </a>
 
-        <div class="collapse navbar-collapse">
+        <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#mainNavbar"
+        >
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-            <ul class="navbar-nav ms-auto">
+        <div class="collapse navbar-collapse" id="mainNavbar">
 
-                <li class="nav-item">
-                    <a class="nav-link" href="/">Home</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Profile</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Login</a>
-                </li>
+            <ul class="navbar-nav ms-auto align-items-lg-center">
 
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Register</a>
+                    <a class="nav-link" href="{% url 'posts:home' %}">
+                        Home
+                    </a>
                 </li>
+
+                {% if user.is_authenticated %}
+
+                    <li class="nav-item">
+                        <span class="nav-link">
+                            Hi, {{ user.username }}
+                        </span>
+                    </li>
+
+                    <li class="nav-item ms-lg-2">
+                        <form method="POST" action="{% url 'accounts:logout' %}">
+                            {% csrf_token %}
+
+                            <button
+                                type="submit"
+                                class="btn btn-outline-light btn-sm"
+                            >
+                                Logout
+                            </button>
+                        </form>
+                    </li>
+
+                {% else %}
+
+                    <li class="nav-item">
+                        <a
+                            class="nav-link"
+                            href="{% url 'accounts:login' %}"
+                        >
+                            Login
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a
+                            class="nav-link"
+                            href="{% url 'accounts:register' %}"
+                        >
+                            Register
+                        </a>
+                    </li>
+
+                {% endif %}
 
             </ul>
 
         </div>
-
     </div>
 </nav>
