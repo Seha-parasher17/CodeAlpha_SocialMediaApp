@@ -1,1 +1,1 @@
-console.log("CodeAlpha Social Loaded");
+console.log("CodeAlpha Social Media App loaded.");

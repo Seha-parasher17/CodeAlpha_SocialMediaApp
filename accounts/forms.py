@@ -1,17 +1,42 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-
+from .models import Profile
 
 class RegisterForm(UserCreationForm):
-
-    email = forms.EmailField()
+    email = forms.EmailField(required=True)
 
     class Meta:
         model = User
-        fields = (
-            "username",
-            "email",
-            "password1",
-            "password2",
-        )
+        fields = ("username", "email", "password1", "password2")
+
+class ProfileForm(forms.ModelForm):
+    first_name = forms.CharField(max_length=150, required=False)
+    last_name = forms.CharField(max_length=150, required=False)
+    email = forms.EmailField(required=False)
+
+    class Meta:
+        model = Profile
+        fields = ("bio", "profile_image")
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop("user", None)
+        super().__init__(*args, **kwargs)
+        self.user = user
+        if user:
+            self.fields["first_name"].initial = user.first_name
+            self.fields["last_name"].initial = user.last_name
+            self.fields["email"].initial = user.email
+
+    def save(self, commit=True):
+        profile = super().save(commit=False)
+        if self.user:
+            self.user.first_name = self.cleaned_data.get("first_name", "")
+            self.user.last_name = self.cleaned_data.get("last_name", "")
+            self.user.email = self.cleaned_data.get("email", "")
+            if commit:
+                self.user.save()
+        if commit:
+            profile.save()
+            self.save_m2m()
+        return profile
